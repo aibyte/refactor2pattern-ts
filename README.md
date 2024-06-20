@@ -2,6 +2,12 @@
 
 A sample project to demonstrate the refactoring of a set of codebase to pattern.
 
+## Cases
+
+* Simplification 
+  * [Compose Method](src/List.ts)
+  * [Use composite to replace Implicit Tree](src/simplify/OrdersWriter.ts)
+
 ## steps to create project
 
 * Init project config (package.json)
