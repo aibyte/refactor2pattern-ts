@@ -1,3 +1,5 @@
+import {AndSpec, BelowPrice, CodeSpec, ColorSpec, NameSpec, NotSpec, PriceSpec, Spec} from "./Spec";
+
 export class Product {
     private readonly _code: string;
     private readonly _name: string;
@@ -44,68 +46,54 @@ export class ProductRepository {
 export class ProductFinder {
     private readonly productRepository: ProductRepository;
 
-
     constructor(productRepository: ProductRepository) {
         this.productRepository = productRepository;
     }
 
     public byCode(code: string): Product[] {
-        let result: Product[] = new Array<Product>();
-        for (let product of this.productRepository.getIterator()) {
-            if (product.code === code) {
-                result.push(product);
-            }
-        }
-        return result;
+        let codeSpec = new CodeSpec(code);
+        return this.selectBy(codeSpec);
     }
 
     public byName(nameToBeFound: string) {
-        let result: Product[] = new Array<Product>();
-        for (let product of this.productRepository.getIterator()) {
-            if (product.name === nameToBeFound) {
-                result.push(product);
-            }
-        }
-        return result;
+        let nameSpec = new NameSpec(nameToBeFound)
+        return this.selectBy(nameSpec);
     }
 
     public byColor(color: string) {
-        let result: Product[] = new Array<Product>();
-        for (let product of this.productRepository.getIterator()) {
-            if (product.color === color) {
-                result.push(product);
-            }
-        }
-        return result;
+        let colorSpec = new ColorSpec(color)
+        return this.selectBy(colorSpec);
     }
 
     public byPrice(price: number) {
-        let result: Product[] = new Array<Product>();
-        for (let product of this.productRepository.getIterator()) {
-            if (product.price === price) {
-                result.push(product);
-            }
-        }
-        return result;
+        let priceSpec = new PriceSpec(price)
+        return this.selectBy(priceSpec);
     }
 
     public byColorAndBelowPrice(color: string, price: number) {
-        let result: Product[] = new Array<Product>();
-        for (let product of this.productRepository.getIterator()) {
-            if (product.color === color && product.price < price) {
-                result.push(product);
-            }
-        }
-        return result;
+        let colorSpec = new ColorSpec(color)
+        let belowPriceSpec = new BelowPrice(price)
+        let andSpec = new AndSpec(colorSpec, belowPriceSpec)
+
+        return this.selectBy(andSpec);
     }
 
     public byBelowPriceAvoidColor(price: number, color: string) {
+        let belowPriceSpec = new BelowPrice(price)
+        let colorSpec = new ColorSpec(color)
+        let notSpec = new NotSpec(colorSpec)
+        let andSpec = new AndSpec(belowPriceSpec, notSpec)
+        return this.selectBy(andSpec);
+    }
+
+    private selectBy(spec: Spec) {
         let result: Product[] = new Array<Product>();
         for (let product of this.productRepository.getIterator()) {
-            if (product.price < price && product.color !== color) {
+            if (spec.isSatisfiedBy(product)) {
                 result.push(product);
             }
         }
         return result;
     }
 }
+
