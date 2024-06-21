@@ -7,6 +7,8 @@ A sample project to demonstrate the refactoring of a set of codebase to pattern.
 * Simplification 
   * [Compose Method](src/List.ts)
   * [Use composite to replace Implicit Tree](src/simplify/OrdersWriter.ts)
+* Generalization
+  * [Use Interpreter to replace Implicit Language - ProductFinder](src/generalization/interpreter/ProductFinder.ts)
 
 ## steps to create project
 
