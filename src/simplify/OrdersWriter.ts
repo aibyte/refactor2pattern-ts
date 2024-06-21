@@ -1,3 +1,5 @@
+import {TagNode} from "./TagNode";
+
 export class Product {
     get name(): string {
         return this._name;
@@ -60,35 +62,33 @@ export class OrderWriter {
     }
 
     public getContents(): String {
-        let xml = "";
-        xml = this.writeOrderTo(xml);
-        return xml;
+        return this.writeOrderTo();
     }
 
-    private writeOrderTo(xml: string) {
-        xml += "<orders>";
+    private writeOrderTo() {
+        let ordersTagNode = new TagNode("orders");
         for (let order of this.orders.orders) {
-            xml += "<order id='" + order.id + "'>";
-            xml = this.writeProductTo(order, xml);
-            xml += "</order>";
+            let orderTagNode: TagNode = new TagNode("order");
+            orderTagNode.addAttribute("id", order.id.toString());
+            this.writeProductTo(order, orderTagNode)
+            ordersTagNode.add(orderTagNode);
         }
-        xml += "</orders>";
-        return xml;
+        return ordersTagNode.toXML();
     }
 
-    private writeProductTo(order: Order, xml: string) {
+    private writeProductTo(order: Order, orderTagNode: TagNode) {
         for (let j = 0; j < order.getProductCount(); j++) {
             let product = order.getProduct(j);
-            xml += "<product>";
-            xml = this.writePriceTo(product, xml);
-            xml += product.name
-            xml += "</product>";
+            let productTagNode = new TagNode("product");
+            productTagNode.addValue(product.name);
+            this.writePriceTo(product, productTagNode);
+            orderTagNode.add(productTagNode);
         }
-        return xml;
     }
 
-    private writePriceTo(product: Product, xml: string) {
-        xml += "<price>" + product.price + "</price>";
-        return xml;
+    private writePriceTo(product: Product, productTagNode: TagNode) {
+        let priceTagNode: TagNode  = new TagNode("price");
+        priceTagNode.addValue(product.price.toString());
+        productTagNode.add(priceTagNode)
     }
 }
