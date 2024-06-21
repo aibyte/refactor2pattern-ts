@@ -1,8 +1,8 @@
 export class TagNode {
-    private tagName: string;
+    private readonly tagName: string;
     private attributes: string;
     private value: string;
-    private children: TagNode[];
+    private readonly children: TagNode[];
 
     constructor(tagName: string) {
         this.tagName = tagName;
@@ -12,16 +12,36 @@ export class TagNode {
     }
 
     public toXML() {
-        let result = `<${this.tagName}${this.attributes}>`;
+        let resultArray : Array<String> = new Array<String>()
+        this.writeContentsTo(resultArray);
+        return resultArray.join("");
+    }
 
-        for (let child of this.children) {
-            result += child.toXML();
-        }
+    private writeContentsTo(result: Array<String>) {
+        this.writeOpenTagTo(result);
+        this.writeChildrenTo(result);
+        this.writeValueTo(result);
+        this.writeCloseTagTo(result);
+    }
+
+    private writeCloseTagTo(result: Array<String>) {
+        result.push(`</${this.tagName}>`)
+    }
+
+    private writeValueTo(result: Array<String>) {
         if (this.value) {
-            result += this.value;
+            result.push(this.value)
         }
-        result += `</${this.tagName}>`;
-        return result;
+    }
+
+    private writeChildrenTo(result: Array<String>) {
+        for (let child of this.children) {
+            child.writeContentsTo(result)
+        }
+    }
+
+    private writeOpenTagTo(result: Array<String>) {
+        result.push(`<${this.tagName}${this.attributes}>`)
     }
 
     public addValue(value: string) {
